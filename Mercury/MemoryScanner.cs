@@ -94,6 +94,11 @@ public static class MemoryScanner
                 {
                     if (status == NtStatus.PartialCopy)
                     {
+                        if (bytesRead == 0)
+                        {
+                            continue;
+                        }
+
                         regionBytes = regionBytes[..(bytesRead - 1)];
                     }
                     else
