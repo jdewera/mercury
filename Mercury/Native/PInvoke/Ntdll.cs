@@ -11,7 +11,7 @@ internal static partial class Ntdll
     internal static partial NtStatus NtQueryVirtualMemory(SafeProcessHandle processHandle, nint baseAddress, MemoryInformationClass memoryInformationClass, out MemoryBasicInformation64 memoryInformation, nint memoryInformationLength, nint returnLength);
 
     [LibraryImport("ntdll.dll")]
-    internal static partial NtStatus NtReadVirtualMemory(SafeProcessHandle processHandle, nint baseAddress, out byte buffer, nint numberOfBytesToRead, nint numberOfBytesRead);
+    internal static partial NtStatus NtReadVirtualMemory(SafeProcessHandle processHandle, nint baseAddress, out byte buffer, nint numberOfBytesToRead, out int numberOfBytesRead);
 
     [LibraryImport("ntdll.dll")]
     internal static partial int RtlNtStatusToDosError(NtStatus status);

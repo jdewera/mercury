@@ -1,5 +1,4 @@
-﻿using System.Collections.Concurrent;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Mercury.Extensions;
@@ -20,7 +19,7 @@ public static class MemoryScanner
     public static ICollection<nint> FindPattern(Process process, string pattern)
     {
         var patternComponents = pattern.Split(' ');
-        var patternBytes = new byte?[patternComponents.Length];
+        var patternBytes = (stackalloc byte?[patternComponents.Length]);
 
         for (var i = 0; i < patternComponents.Length; i++)
         {
@@ -34,12 +33,8 @@ public static class MemoryScanner
             }
         }
 
-        var shiftTable = new int[256];
-
-        for (var i = 0; i < shiftTable.Length; i++)
-        {
-            shiftTable[i] = patternBytes.Length;
-        }
+        var shiftTable = (stackalloc int[256]);
+        shiftTable.Fill(patternBytes.Length);
 
         for (var i = 0; i < patternBytes.Length - 1; i++)
         {
@@ -51,9 +46,9 @@ public static class MemoryScanner
             }
         }
 
-        var occurrences = new ConcurrentBag<nint>();
+        var occurrences = new List<nint>();
 
-        Parallel.ForEach(GetRegions(process), region =>
+        foreach (var region in GetRegions(process))
         {
             for (var i = patternBytes.Length - 1; i < region.Bytes.Length; i += shiftTable[region.Bytes[i]])
             {
@@ -66,9 +61,9 @@ public static class MemoryScanner
                     }
                 }
             }
-        });
+        }
 
-        return occurrences.Order().ToList();
+        return occurrences;
     }
 
     private static IEnumerable<(nint Address, byte[] Bytes)> GetRegions(Process process)
@@ -81,18 +76,30 @@ public static class MemoryScanner
 
             if (!status.IsSuccess())
             {
-                break;
+                if (status == NtStatus.InvalidParameter)
+                {
+                    break;
+                }
+
+                throw new Win32Exception(Ntdll.RtlNtStatusToDosError(status));
             }
 
             if (region.State.HasFlag(PageState.Commit) && region.Protect != PageProtection.NoAccess && !region.Protect.HasFlag(PageProtection.Guard))
             {
                 var regionBytes = new byte[region.RegionSize];
 
-                status = Ntdll.NtReadVirtualMemory(process.SafeHandle, currentAddress, out regionBytes[0], regionBytes.Length, 0);
+                status = Ntdll.NtReadVirtualMemory(process.SafeHandle, currentAddress, out regionBytes[0], regionBytes.Length, out var bytesRead);
 
                 if (!status.IsSuccess())
                 {
-                    throw new Win32Exception(Ntdll.RtlNtStatusToDosError(status));
+                    if (status == NtStatus.PartialCopy)
+                    {
+                        regionBytes = regionBytes[..(bytesRead - 1)];
+                    }
+                    else
+                    {
+                        throw new Win32Exception(Ntdll.RtlNtStatusToDosError(status));
+                    }
                 }
 
                 yield return (currentAddress, regionBytes);
