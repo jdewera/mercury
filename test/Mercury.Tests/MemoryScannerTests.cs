@@ -5,18 +5,13 @@ using Xunit;
 
 namespace Mercury.Tests;
 
-public sealed class MemoryScannerTests
+public class MemoryScannerTests
 {
     [Theory]
     [InlineData(1)]
-    [InlineData(2)]
-    [InlineData(3)]
-    [InlineData(5)]
-    [InlineData(8)]
-    [InlineData(13)]
-    [InlineData(21)]
-    [InlineData(34)]
-    [InlineData(55)]
+    [InlineData(10)]
+    [InlineData(100)]
+    [InlineData(1000)]
     public void FindPattern_FindsPattern(int length)
     {
         // Arrange
@@ -39,7 +34,7 @@ public sealed class MemoryScannerTests
     {
         // Arrange
 
-        var patternBytes = RandomNumberGenerator.GetBytes(8);
+        var patternBytes = RandomNumberGenerator.GetBytes(10);
         var patternBytesHandle = GCHandle.Alloc(patternBytes, GCHandleType.Pinned);
         var pattern = string.Join(' ', BitConverter.ToString(patternBytes).Split('-').Select((@byte, i) => i is 1 or 3 or 5 ? "??" : @byte));
 
