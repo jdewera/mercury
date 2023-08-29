@@ -22,7 +22,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Mercury\Mercury.csproj" />
+      <ProjectReference Include="..\..\src\Mercury\Mercury.csproj" />
     </ItemGroup>
 
 </Project>

@@ -1,8 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mercury", "Mercury\Mercury.csproj", "{63B79715-EA80-44A1-A4E4-5218F0999F53}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mercury.Tests", "test\Mercury.Tests\Mercury.Tests.csproj", "{71B428C3-DDCD-48E3-A97C-466F3307CFE6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mercury.Tests", "Mercury.Tests\Mercury.Tests.csproj", "{3064D233-9B86-429F-8975-467C196BF4B9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mercury", "src\Mercury\Mercury.csproj", "{EF79470D-6AC4-45B7-A021-FF6B25A646F4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -10,13 +10,13 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{63B79715-EA80-44A1-A4E4-5218F0999F53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{63B79715-EA80-44A1-A4E4-5218F0999F53}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{63B79715-EA80-44A1-A4E4-5218F0999F53}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{63B79715-EA80-44A1-A4E4-5218F0999F53}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3064D233-9B86-429F-8975-467C196BF4B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3064D233-9B86-429F-8975-467C196BF4B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3064D233-9B86-429F-8975-467C196BF4B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3064D233-9B86-429F-8975-467C196BF4B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71B428C3-DDCD-48E3-A97C-466F3307CFE6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71B428C3-DDCD-48E3-A97C-466F3307CFE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71B428C3-DDCD-48E3-A97C-466F3307CFE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71B428C3-DDCD-48E3-A97C-466F3307CFE6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF79470D-6AC4-45B7-A021-FF6B25A646F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF79470D-6AC4-45B7-A021-FF6B25A646F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF79470D-6AC4-45B7-A021-FF6B25A646F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF79470D-6AC4-45B7-A021-FF6B25A646F4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
