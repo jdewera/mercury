@@ -34,7 +34,18 @@ public static class MemoryScanner
         }
 
         var shiftTable = (stackalloc int[256]);
-        shiftTable.Fill(patternBytes.Length);
+        var defaultShift = patternBytes.Length;
+
+        for (var i = patternBytes.Length - 1; i >= 0; i--)
+        {
+            if (patternBytes[i] is null)
+            {
+                defaultShift -= i;
+                break;
+            }
+        }
+
+        shiftTable.Fill(defaultShift);
 
         for (var i = 0; i < patternBytes.Length - 1; i++)
         {
