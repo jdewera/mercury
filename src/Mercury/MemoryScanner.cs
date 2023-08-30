@@ -19,7 +19,7 @@ public static class MemoryScanner
     public static ICollection<nint> FindPattern(Process process, string pattern)
     {
         var patternComponents = pattern.Split(' ');
-        var patternBytes = (stackalloc byte?[patternComponents.Length]);
+        var patternBytes = new byte?[patternComponents.Length];
 
         for (var i = 0; i < patternComponents.Length; i++)
         {
@@ -33,19 +33,16 @@ public static class MemoryScanner
             }
         }
 
-        var shiftTable = (stackalloc int[256]);
+        var shiftTable = new int[256];
         var defaultShift = patternBytes.Length;
+        var lastWildcardIndex = Array.LastIndexOf(patternBytes, "??");
 
-        for (var i = patternBytes.Length - 1; i >= 0; i--)
+        if (lastWildcardIndex != -1)
         {
-            if (patternBytes[i] is null)
-            {
-                defaultShift -= i;
-                break;
-            }
+            defaultShift -= lastWildcardIndex;
         }
 
-        shiftTable.Fill(defaultShift);
+        Array.Fill(shiftTable, defaultShift);
 
         for (var i = 0; i < patternBytes.Length - 1; i++)
         {
@@ -57,13 +54,32 @@ public static class MemoryScanner
             }
         }
 
+        var regions = GetRegions(process).ToList();
         var occurrences = new List<nint>();
 
-        foreach (var region in GetRegions(process))
+        foreach (var region in regions)
         {
-            for (var i = patternBytes.Length - 1; i < region.Bytes.Length; i += shiftTable[region.Bytes[i]])
+            var regionBytes = new byte[region.Size];
+            var status = Ntdll.NtReadVirtualMemory(process.SafeHandle, region.Address, out regionBytes[0], regionBytes.Length, out var bytesRead);
+
+            if (!status.IsSuccess())
             {
-                for (var j = patternBytes.Length - 1; patternBytes[j] is null || patternBytes[j] == region.Bytes[i - patternBytes.Length + 1 + j]; j--)
+                if (status == NtStatus.PartialCopy)
+                {
+                    if (bytesRead == 0)
+                    {
+                        continue;
+                    }
+                }
+                else
+                {
+                    throw new Win32Exception(Ntdll.RtlNtStatusToDosError(status));
+                }
+            }
+
+            for (var i = patternBytes.Length - 1; i < bytesRead; i += shiftTable[regionBytes[i]])
+            {
+                for (var j = patternBytes.Length - 1; patternBytes[j] is null || patternBytes[j] == regionBytes[i - patternBytes.Length + 1 + j]; j--)
                 {
                     if (j == 0)
                     {
@@ -76,8 +92,7 @@ public static class MemoryScanner
 
         return occurrences;
     }
-
-    private static IEnumerable<(nint Address, byte[] Bytes)> GetRegions(Process process)
+    private static IEnumerable<(nint Address, int Size)> GetRegions(Process process)
     {
         nint currentAddress = 0;
 
@@ -97,28 +112,7 @@ public static class MemoryScanner
 
             if (region.State.HasFlag(PageState.Commit) && region.Protect != PageProtection.NoAccess && !region.Protect.HasFlag(PageProtection.Guard))
             {
-                var regionBytes = new byte[region.RegionSize];
-
-                status = Ntdll.NtReadVirtualMemory(process.SafeHandle, currentAddress, out regionBytes[0], regionBytes.Length, out var bytesRead);
-
-                if (!status.IsSuccess())
-                {
-                    if (status == NtStatus.PartialCopy)
-                    {
-                        if (bytesRead == 0)
-                        {
-                            continue;
-                        }
-
-                        regionBytes = regionBytes[..(bytesRead - 1)];
-                    }
-                    else
-                    {
-                        throw new Win32Exception(Ntdll.RtlNtStatusToDosError(status));
-                    }
-                }
-
-                yield return (currentAddress, regionBytes);
+                yield return (currentAddress, (int) region.RegionSize);
             }
 
             currentAddress = (nint) region.BaseAddress + region.RegionSize;
