@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mercury.Tests", "test\Mercu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mercury", "src\Mercury\Mercury.csproj", "{EF79470D-6AC4-45B7-A021-FF6B25A646F4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mercury.Benchmarks", "test\Mercury.Benchmarks\Mercury.Benchmarks.csproj", "{006D89A1-A24B-4FA8-9FCB-BCE75CEA08D4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{EF79470D-6AC4-45B7-A021-FF6B25A646F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF79470D-6AC4-45B7-A021-FF6B25A646F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF79470D-6AC4-45B7-A021-FF6B25A646F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{006D89A1-A24B-4FA8-9FCB-BCE75CEA08D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{006D89A1-A24B-4FA8-9FCB-BCE75CEA08D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{006D89A1-A24B-4FA8-9FCB-BCE75CEA08D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{006D89A1-A24B-4FA8-9FCB-BCE75CEA08D4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
