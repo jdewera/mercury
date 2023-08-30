@@ -92,6 +92,7 @@ public static class MemoryScanner
 
         return occurrences;
     }
+
     private static IEnumerable<(nint Address, int Size)> GetRegions(Process process)
     {
         nint currentAddress = 0;
