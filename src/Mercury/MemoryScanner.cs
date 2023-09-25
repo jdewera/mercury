@@ -108,7 +108,7 @@ public static class MemoryScanner
                 throw new Win32Exception();
             }
 
-            if (region.State.HasFlag(PageState.Commit) && region.Protect != PageProtection.NoAccess && !region.Protect.HasFlag(PageProtection.Guard))
+            if (region.State.HasFlag(AllocationType.Commit) && region.Protect != ProtectionType.NoAccess && !region.Protect.HasFlag(ProtectionType.Guard))
             {
                 yield return (currentAddress, (int) region.RegionSize);
             }
