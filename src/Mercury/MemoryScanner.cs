@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using Mercury.Extensions;
+using System.Runtime.InteropServices;
 using Mercury.Native.Enums;
 using Mercury.Native.PInvoke;
 using Mercury.Native.Structs;
@@ -60,11 +60,10 @@ public static class MemoryScanner
         foreach (var region in regions)
         {
             var regionBytes = new byte[region.Size];
-            var status = Ntdll.NtReadVirtualMemory(process.SafeHandle, region.Address, out regionBytes[0], regionBytes.Length, out var bytesRead);
 
-            if (!status.IsSuccess())
+            if (!Kernel32.ReadProcessMemory(process.SafeHandle, region.Address, out regionBytes[0], regionBytes.Length, out var bytesRead))
             {
-                if (status == NtStatus.PartialCopy)
+                if (Marshal.GetLastPInvokeError() == (int) SystemErrorCode.PartialCopy)
                 {
                     if (bytesRead == 0)
                     {
@@ -73,7 +72,7 @@ public static class MemoryScanner
                 }
                 else
                 {
-                    throw new Win32Exception(Ntdll.RtlNtStatusToDosError(status));
+                    throw new Win32Exception();
                 }
             }
 
@@ -99,16 +98,14 @@ public static class MemoryScanner
 
         while (true)
         {
-            var status = Ntdll.NtQueryVirtualMemory(process.SafeHandle, currentAddress, MemoryInformationClass.MemoryBasicInformation, out var region, Unsafe.SizeOf<MemoryBasicInformation64>(), 0);
-
-            if (!status.IsSuccess())
+            if (Kernel32.VirtualQueryEx(process.SafeHandle, currentAddress, out var region, Unsafe.SizeOf<MemoryBasicInformation64>()) == 0)
             {
-                if (status == NtStatus.InvalidParameter)
+                if (Marshal.GetLastPInvokeError() == (int) SystemErrorCode.InvalidParameter)
                 {
                     break;
                 }
 
-                throw new Win32Exception(Ntdll.RtlNtStatusToDosError(status));
+                throw new Win32Exception();
             }
 
             if (region.State.HasFlag(PageState.Commit) && region.Protect != PageProtection.NoAccess && !region.Protect.HasFlag(PageProtection.Guard))
